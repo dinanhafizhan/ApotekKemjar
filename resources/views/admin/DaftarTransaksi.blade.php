@@ -12,10 +12,18 @@
   <aside class="w-64 bg-indigo-800 text-white flex flex-col p-6 space-y-4">
     <h1 class="text-3xl font-bold mb-6">💊 Admin Panel</h1>
     <nav class="space-y-3">
-      <a href="index.html" class="block p-2 rounded hover:bg-indigo-700">🏠 Dashboard</a>
-      <a href="users.html" class="block p-2 rounded hover:bg-indigo-700">👤 Manajemen User</a>
-      <a href="obat.html" class="block p-2 rounded hover:bg-indigo-700">💊 Manajemen Obat</a>
-      <a href="transaksi.html" class="block p-2 rounded bg-indigo-700">💰 Daftar Transaksi</a>
+      <a href="{{ route('dashboard') }}" class="flex items-center p-2 rounded hover:bg-indigo-700 {{ request()->routeIs('dashboard') ? 'bg-indigo-700' : '' }}">
+        <span class="ml-2">🏠 Dashboard</span>
+      </a>
+      <a href="{{ route('admin.user') }}" class="flex items-center p-2 rounded hover:bg-indigo-700 {{ request()->routeIs('admin.user') ? 'bg-indigo-700' : '' }}">
+        <span class="ml-2">👤 Manajemen User</span>
+      </a>
+      <a href="{{ route('admin.ObatAdmin') }}" class="flex items-center p-2 rounded hover:bg-indigo-700 {{ request()->routeIs('admin.ObatAdmin') ? 'bg-indigo-700' : '' }}">
+        <span class="ml-2">💊 Manajemen Obat</span>
+      </a>
+      <a href="{{ route('admin.transaksi') }}" class="flex items-center p-2 rounded hover:bg-indigo-700 {{ request()->routeIs('admin.transaksi') ? 'bg-indigo-700' : '' }}">
+        <span class="ml-2">💰 Daftar Transaksi</span>
+      </a>
     </nav>
   </aside>
 

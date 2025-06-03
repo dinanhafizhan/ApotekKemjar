@@ -11,13 +11,13 @@ class AdminController extends Controller
     public function index()
     {
         $obats = Obat::all();
-        return view('admin.obat.index', compact('obats'));
+        return view('admin.ObatAdmin', compact('obats'));
     }
 
     // Tampilkan form tambah obat
     public function create()
     {
-        return view('admin.obat.create');
+        return view('admin.ObatAdmin.create');
     }
 
     // Simpan data obat baru
@@ -31,7 +31,7 @@ class AdminController extends Controller
 
         Obat::create($request->all());
 
-        return redirect()->route('admin.obat.index')->with('success', 'Obat berhasil ditambahkan.');
+        return redirect()->route('admin.ObatAdmin')->with('success', 'Obat berhasil ditambahkan.');
     }
 
     // Tampilkan form edit
@@ -53,7 +53,7 @@ class AdminController extends Controller
         $obat = Obat::findOrFail($id);
         $obat->update($request->all());
 
-        return redirect()->route('admin.obat.index')->with('success', 'Obat berhasil diperbarui.');
+        return redirect()->route('admin.ObatAdmin')->with('success', 'Obat berhasil diperbarui.');
     }
 
     // Hapus data obat
@@ -62,6 +62,6 @@ class AdminController extends Controller
         $obat = Obat::findOrFail($id);
         $obat->delete();
 
-        return redirect()->route('admin.obat.index')->with('success', 'Obat berhasil dihapus.');
+        return redirect()->route('admin.ObatAdmin')->with('success', 'Obat berhasil dihapus.');
     }
 }

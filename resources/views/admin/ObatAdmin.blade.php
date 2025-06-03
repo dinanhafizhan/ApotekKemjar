@@ -12,10 +12,18 @@
   <aside class="w-64 bg-indigo-800 text-white flex flex-col p-6 space-y-4">
     <h1 class="text-3xl font-bold mb-6">💊 Admin Panel</h1>
     <nav class="space-y-3">
-      <a href="index.html" class="block p-2 rounded hover:bg-indigo-700">🏠 Dashboard</a>
-      <a href="users.html" class="block p-2 rounded hover:bg-indigo-700">👤 Manajemen User</a>
-      <a href="obat.html" class="block p-2 rounded bg-indigo-700">💊 Manajemen Obat</a>
-      <a href="transaksi.html" class="block p-2 rounded hover:bg-indigo-700">💰 Daftar Transaksi</a>
+      <a href="{{ route('dashboard') }}" class="flex items-center p-2 rounded hover:bg-indigo-700 {{ request()->routeIs('dashboard') ? 'bg-indigo-700' : '' }}">
+        <span class="ml-2">🏠 Dashboard</span>
+      </a>
+      <a href="{{ route('admin.user') }}" class="flex items-center p-2 rounded hover:bg-indigo-700 {{ request()->routeIs('admin.user') ? 'bg-indigo-700' : '' }}">
+        <span class="ml-2">👤 Manajemen User</span>
+      </a>
+      <a href="{{ route('admin.ObatAdmin') }}" class="flex items-center p-2 rounded hover:bg-indigo-700 {{ request()->routeIs('admin.ObatAdmin') ? 'bg-indigo-700' : '' }}">
+        <span class="ml-2">💊 Manajemen Obat</span>
+      </a>
+      <a href="{{ route('admin.transaksi') }}" class="flex items-center p-2 rounded hover:bg-indigo-700 {{ request()->routeIs('admin.transaksi') ? 'bg-indigo-700' : '' }}">
+        <span class="ml-2">💰 Daftar Transaksi</span>
+      </a>
     </nav>
   </aside>
 
@@ -33,40 +41,47 @@
           <tr>
             <th class="px-6 py-3 text-left">ID</th>
             <th class="px-6 py-3 text-left">Nama Obat</th>
-            <th class="px-6 py-3 text-left">Stok</th>
+            <th class="px-6 py-3 text-left">Jenis</th>
             <th class="px-6 py-3 text-left">Harga</th>
             <th class="px-6 py-3 text-center">Aksi</th>
           </tr>
         </thead>
         <tbody>
+          @foreach($obats as $obat)
           <tr class="hover:bg-gray-50 border-t">
-            <td class="px-6 py-4">1</td>
-            <td class="px-6 py-4">Paracetamol</td>
-            <td class="px-6 py-4">120</td>
-            <td class="px-6 py-4">Rp5.000</td>
+            <td class="px-6 py-4">{{ $obat->id }}</td>
+            <td class="px-6 py-4">{{ $obat->nama }}</td>
+            <td class="px-6 py-4">{{ $obat->jenis }}</td>
+            <td class="px-6 py-4">Rp{{ number_format($obat->harga, 0, ',', '.') }}</td>
             <td class="px-6 py-4 text-center space-x-2">
-              <button onclick="document.getElementById('editModal').classList.remove('hidden')" class="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500">Edit</button>
-              <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Hapus</button>
+              <button onclick="openEditModal({{ $obat }})" class="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500">Edit</button>
+              <form action="{{ route('admin.ObatAdmin.destroy', $obat->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin hapus?')">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Hapus</button>
+              </form>
             </td>
           </tr>
+          @endforeach
         </tbody>
       </table>
     </div>
   </main>
 
   <!-- Add Modal -->
-  <div id="addModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+  <div id="addModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50">
     <div class="bg-white w-full max-w-md p-6 rounded-lg shadow-lg">
       <h3 class="text-xl font-bold mb-4 text-indigo-700">Tambah Obat</h3>
-      <form>
+      <form action="{{ route('admin.ObatAdmin.store') }}" method="POST">
+        @csrf
         <label class="block mb-2 text-sm font-medium">Nama Obat</label>
-        <input type="text" class="w-full p-2 border rounded mb-3" placeholder="Nama Obat" />
-        
-        <label class="block mb-2 text-sm font-medium">Stok</label>
-        <input type="number" class="w-full p-2 border rounded mb-3" placeholder="Jumlah Stok" />
+        <input name="nama" type="text" class="w-full p-2 border rounded mb-3" required />
+
+        <label class="block mb-2 text-sm font-medium">Jenis</label>
+        <input name="jenis" type="text" class="w-full p-2 border rounded mb-3" required />
 
         <label class="block mb-2 text-sm font-medium">Harga</label>
-        <input type="text" class="w-full p-2 border rounded mb-3" placeholder="Harga (misal: 5000)" />
+        <input name="harga" type="number" class="w-full p-2 border rounded mb-3" required />
 
         <div class="flex justify-end space-x-2">
           <button type="button" onclick="document.getElementById('addModal').classList.add('hidden')" class="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500">Batal</button>
@@ -77,18 +92,22 @@
   </div>
 
   <!-- Edit Modal -->
-  <div id="editModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+  <div id="editModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50">
     <div class="bg-white w-full max-w-md p-6 rounded-lg shadow-lg">
       <h3 class="text-xl font-bold mb-4 text-yellow-600">Edit Obat</h3>
-      <form>
+      <form id="editForm" method="POST">
+        @csrf
+        @method('PUT')
+        <input type="hidden" name="id" id="editId">
+        
         <label class="block mb-2 text-sm font-medium">Nama Obat</label>
-        <input type="text" class="w-full p-2 border rounded mb-3" value="Paracetamol" />
+        <input name="nama" id="editNama" type="text" class="w-full p-2 border rounded mb-3" required />
 
-        <label class="block mb-2 text-sm font-medium">Stok</label>
-        <input type="number" class="w-full p-2 border rounded mb-3" value="120" />
+        <label class="block mb-2 text-sm font-medium">Jenis</label>
+        <input name="jenis" id="editJenis" type="text" class="w-full p-2 border rounded mb-3" required />
 
         <label class="block mb-2 text-sm font-medium">Harga</label>
-        <input type="text" class="w-full p-2 border rounded mb-3" value="5000" />
+        <input name="harga" id="editHarga" type="number" class="w-full p-2 border rounded mb-3" required />
 
         <div class="flex justify-end space-x-2">
           <button type="button" onclick="document.getElementById('editModal').classList.add('hidden')" class="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500">Batal</button>
@@ -97,6 +116,17 @@
       </form>
     </div>
   </div>
+
+  <script>
+    function openEditModal(obat) {
+      document.getElementById('editModal').classList.remove('hidden');
+      document.getElementById('editId').value = obat.id;
+      document.getElementById('editNama').value = obat.nama;
+      document.getElementById('editJenis').value = obat.jenis;
+      document.getElementById('editHarga').value = obat.harga;
+      document.getElementById('editForm').action = `/admin/obat/${obat.id}`;
+    }
+  </script>
 
 </body>
 </html>
